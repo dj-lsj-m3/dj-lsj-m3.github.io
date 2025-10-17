@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derek Ronquillo | Graphic Designer & Software Engineer</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <!--    Animated Background & Controls    -->
+        <canvas id="c"></canvas>
+        <div style="display: none;" class="ui" aria-hidden>
+            <input id="density" type="range" min="10" max="180" value="40" />
+            <input id="speed" type="range" min="0.2" max="3" step="0.1" value="3" />
+        </div>
+
+    <!--    Sticky Navigation Bar    -->
+        <div class="nav">
+            <img src="ICON.png">
+            <a href="#">Programs</a>
+            <a href="#">Designs</a>
+            <a href="#">Performances</a>
+            <a href="#">Hire Me</a>
+        </div>
+    
+    <!--    Main Container    -->
+        <div class="container">
+            <!--    ## Hero Section ##    -->
+            <section class="hero">
+                <img src="usr.png" id="usrpic" alt="">
+                <h1>Derek Ronquillo</h1>
+                <h2>Graphic Designer | Software Engineer | Artist</h2>
+                <div class="button_container">
+                    <a href="#">@</a>
+                    <a href="#">@</a>
+                    <a href="#">@</a>
+                    <a href="#">@</a>
+                    <a href="#">@</a>
+                </div>
+            </section>
+            
+            <!--    ## About Section ##    -->
+            <section class="about">
+                <h1>About Me</h1>
+                <p>
+                    I don’t just write code that works, I build systems that feel and easy good to use. Fast 。stable 。clean. I care about every detail and every pixel. Design isn’t just a decoration, it’s a software's structure. I’ve been doing this long enough to know what breaks, what scales, and what actually matters. I don’t overpromise. I just deliver. As a musician, my stage name is Lee SeungJae. I’ve been doing this long enough to know what breaks, what scales, and what actually matters. I don’t overpromise. I just deliver. As a musician, my stage name is Lee SeungJae.I’ve been doing this long enough to know what breaks, what scales, and what actually matters. I don’t overpromise. I just deliver. As a musician, my stage name is Lee SeungJae.
+                </p>
+                <h1>My Experiences</h1>
+                <table>
+                    <tr>
+                        <td style="color: gray;">2024 - Present</td>
+                        <td style="color: white; font-weight:500;">CEO & Founder</td>
+                        <td style="color: rgb(141, 188, 255);">Quantum Labs</td>
+                    </tr>
+                    <tr>
+                        <td style="color: gray;">2025 - Present</td>
+                        <td style="color: rgb(255, 222, 150);">AI Engineer</td>
+                        <td>Freelance</td>
+                    </tr>
+                    <tr>
+                        <td style="color: gray;">2021 - Present</td>
+                        <td style="color: rgb(255, 222, 150);">Software Engineer</td>
+                        <td>Freelance</td>
+                    </tr>
+                    <tr>
+                        <td style="color: gray;">2019 - 2021</td>
+                        <td style="color: rgb(255, 222, 150);">Web Developer & UI/UX Designer</td>
+                        <td>Freelance</td>
+                    </tr>
+                    <tr>
+                        <td style="color: gray;">2022 - 2024</td>
+                        <td style="color: rgb(223, 223, 223);">Web Developer</td>
+                        <td style="color: rgb(255, 150, 150);">MoziTech</td>
+                    </tr>
+                </table>
+            </section>
+    
+            <!--    ## Designs Section ##    -->
+            <section class="designs">
+                <h1>My Latest Designs</h1>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. In, explicabo quam pariatur soluta.</p>
+                <div class="grid">
+                    <div class="card">
+                        <img src="" alt="">
+                        <h1>Project Title</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam soluta nulla, ipsam odio.</p>
+                        <a href="#">Buy Now!</a>
+                    </div>
+                    <div class="card">
+                        <img src="" alt="">
+                        <h1>Project Title</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam soluta nulla, ipsam odio.</p>
+                        <a href="#">Buy Now!</a>
+                    </div>
+                    <div class="card">
+                        <img src="" alt="">
+                        <h1>Project Title</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam soluta nulla, ipsam odio.</p>
+                        <a href="#">Buy Now!</a>
+                    </div>
+                    <div class="card">
+                        <img src="" alt="">
+                        <h1>Project Title</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam soluta nulla, ipsam odio.</p>
+                        <a href="#">Buy Now!</a>
+                    </div>
+                </div>
+                <a href="#" id="btn">View all</a>
+            </section>
+        </div>
+
+    <script>
+        (() => {
+            const canvas = document.getElementById('c');
+            const ctx = canvas.getContext('2d');
+            let DPR = Math.max(1, window.devicePixelRatio || 1);
+            const bg = new Image();
+            bg.src = 'Background.png';
+            let bgLoaded = false;
+            bg.onload = () => { bgLoaded = true; };
+            function resize() {
+                DPR = Math.max(1, window.devicePixelRatio || 1);
+                canvas.width = Math.floor(innerWidth * DPR);
+                canvas.height = Math.floor(innerHeight * DPR);
+                canvas.style.width = innerWidth + 'px';
+                canvas.style.height = innerHeight + 'px';
+                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            }
+            addEventListener('resize', resize);
+            resize();
+            const bluePalette = ['#9be7ff', '#002f62', '#3bb9ff', '#1b9cff', '#0077ff', '#002f62'];
+            const TYPES = ['rounded', 'pill', 'square', 'rotated', 'soft-rounded'];
+            function rand(a, b) { return Math.random() * (b - a) + a }
+            function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+            class Box {
+                constructor(w, h) {
+                    this.reset(true);
+                    if (w) this.w = w;
+                    if (h) this.h = h;
+                }
+                reset(fromInit = false) {
+                    this.w = rand(24, 120);
+                    this.h = rand(18, 100);
+                    if (Math.random() < 0.18) this.w = this.h = rand(20, 90);
+                    if (Math.random() < 0.12) { this.h = rand(10, 28); this.w = rand(60, 240); }
+                    this.x = rand(-50, innerWidth + 50);
+                    this.y = fromInit ? rand(-innerHeight, innerHeight) : -rand(20, 140);
+                    this.speed = rand(8, 45);
+                    this.speed *= rand(0.5, 1.3);
+                    this.spin = rand(-0.8, 0.8);
+                    this.rotation = rand(0, Math.PI * 2);
+                    this.alpha = rand(0.25, 0.95);
+                    this.corner = rand(6, Math.min(this.w, this.h) * 0.5);
+                    this.type = pick(TYPES);
+                    this.color = pick(bluePalette);
+                    this.color2 = pick(bluePalette);
+                    this.strokeOnly = Math.random() < 0.12;
+                    this.glow = rand(0, 18);
+                    if (Math.random() < 0.28) this.speed *= 0.45;
+                    this.vy = this.speed / 60;
+                    this.scale = rand(0.85, 1.25);
+                }
+                update(dt, globalSpeed) {
+                    this.y += (this.speed * globalSpeed) * dt;
+                    this.rotation += this.spin * 0.01;
+                    this.x += Math.sin((this.y + this.x) * 0.003) * 0.2;
+                    if (this.y - this.h > innerHeight + 150) this.reset(false);
+                }
+                draw(ctx) {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.scale(this.scale, this.scale);
+                    const g = ctx.createLinearGradient(-this.w / 2, -this.h / 2, this.w / 2, this.h / 2);
+                    g.addColorStop(0, this.color);
+                    g.addColorStop(1, this.color2);
+                    if (this.glow > 0) {
+                        ctx.shadowBlur = this.glow;
+                        ctx.shadowColor = this.color;
+                    }
+                    if (this.strokeOnly) {
+                        ctx.lineWidth = Math.max(1, Math.min(6, this.w * 0.03));
+                        roundedRect(ctx, -this.w / 2, -this.h / 2, this.w, this.h, this.corner);
+                        ctx.strokeStyle = g;
+                        ctx.stroke();
+                    } else {
+                        roundedRect(ctx, -this.w / 2, -this.h / 2, this.w, this.h, this.corner);
+                        ctx.fillStyle = g;
+                        ctx.fill();
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+                        ctx.stroke();
+                    }
+                    ctx.beginPath();
+                    ctx.globalAlpha = 0.12;
+                    const rx = -this.w / 2 + Math.min(8, this.w * 0.08);
+                    const ry = -this.h / 2 + Math.min(8, this.h * 0.12);
+                    roundedRect(ctx, rx, ry, this.w * 0.38, this.h * 0.18, Math.min(10, this.corner * 0.7));
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill();
+                    ctx.restore();
+                    ctx.globalAlpha = 1;
+                    ctx.shadowBlur = 0;
+                }
+            }
+            function roundedRect(ctx, x, y, w, h, r) {
+                const radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.arcTo(x + w, y, x + w, y + h, radius);
+                ctx.arcTo(x + w, y + h, x, y + h, radius);
+                ctx.arcTo(x, y + h, x, y, radius);
+                ctx.arcTo(x, y, x + w, y, radius);
+                ctx.closePath();
+            }
+            let boxes = [];
+            const densitySlider = document.getElementById('density');
+            const speedSlider = document.getElementById('speed');
+            function makeBoxes(count) {
+                boxes = [];
+                for (let i = 0; i < count; i++) boxes.push(new Box());
+            }
+            makeBoxes(parseInt(densitySlider.value, 10));
+            densitySlider.addEventListener('input', () => {
+                const t = parseInt(densitySlider.value, 10);
+                makeBoxes(t);
+            });
+            let last = performance.now();
+            function loop(now) {
+                const dt = Math.min(0.05, (now - last) / 1000);
+                last = now;
+                if (bgLoaded) {
+                    const aspectCanvas = innerWidth / innerHeight;
+                    const aspectImg = bg.width / bg.height;
+                    let drawWidth, drawHeight, offsetX, offsetY;
+                    if (aspectCanvas > aspectImg) {
+                        drawWidth = innerWidth;
+                        drawHeight = innerWidth / aspectImg;
+                        offsetX = 0;
+                        offsetY = (innerHeight - drawHeight) / 2;
+                    } else {
+                        drawHeight = innerHeight;
+                        drawWidth = innerHeight * aspectImg;
+                        offsetX = (innerWidth - drawWidth) / 2;
+                        offsetY = 0;
+                    }
+                    ctx.drawImage(bg, offsetX, offsetY, drawWidth, drawHeight);
+                } else {
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, innerWidth, innerHeight);
+                }
+                const globalSpeed = parseFloat(speedSlider.value);
+                for (const b of boxes) {
+                    b.update(dt, globalSpeed * 0.8);
+                    b.draw(ctx);
+                }
+                requestAnimationFrame(loop);
+            }
+            requestAnimationFrame(loop);
+        })();
+    </script>
+
+</body>
+</html>
