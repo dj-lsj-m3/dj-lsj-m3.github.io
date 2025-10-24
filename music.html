@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grid Music Player</title>
+<script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
+<style>
+body {
+  font-family: "Inter", sans-serif;
+  background: #0d0d0d;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+h1, h2 {
+  margin: 5px 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  width: 90%;
+  max-width: 1000px;
+  margin-top: 30px;
+}
+.grid-item {
+  background: #181818;
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.grid-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+.grid-item img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+.grid-item .info {
+  padding: 8px;
+}
+.grid-item .info h3 {
+  font-size: 15px;
+  margin: 4px 0;
+}
+.grid-item .info p {
+  font-size: 13px;
+  opacity: 0.7;
+  margin: 0;
+}
+.player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #111;
+  padding: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-top: 1px solid #222;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+}
+.player img {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+.controls button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+.controls button:hover {
+  color: #1db954;
+}
+</style>
+</head>
+<body>
+
+<h1>🎶 My Music Library</h1>
+<div class="grid" id="grid"></div>
+
+<div class="player">
+  <img id="albumArt" src="https://via.placeholder.com/120x120?text=No+Art" alt="Album Art">
+  <h2 id="songTitle">No Song Selected</h2>
+  <p id="songArtist"></p>
+  <div class="controls">
+    <button id="prevBtn">⏮️</button>
+    <button id="playPauseBtn">▶️</button>
+    <button id="nextBtn">⏭️</button>
+  </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+const songFiles = [
+  "Track1.m4a",
+  "Track2.m4a",
+  "Track3.m4a",
+  "Track4.m4a",
+  "Track5.m4a",
+  "Track6.m4a",
+  "Track7.m4a",
+  "Track8.m4a"
+];
+
+const grid = document.getElementById("grid");
+const albumArt = document.getElementById("albumArt");
+const songTitle = document.getElementById("songTitle");
+const songArtist = document.getElementById("songArtist");
+const audio = document.getElementById("audio");
+const playPauseBtn = document.getElementById("playPauseBtn");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+
+let songs = [];
+let currentIndex = 0;
+let isPlaying = false;
+
+// Load metadata for songs
+songFiles.forEach((file, index) => {
+  window.jsmediatags.read(file, {
+    onSuccess: (tag) => {
+      const title = tag.tags.title || file.split("/").pop();
+      const artist = tag.tags.artist || "Unknown Artist";
+      let imgURL = "https://via.placeholder.com/160x160?text=No+Art";
+      const pic = tag.tags.picture;
+      if (pic) {
+        const base64String = pic.data.map(b => String.fromCharCode(b)).join('');
+        imgURL = `data:${pic.format};base64,${btoa(base64String)}`;
+      }
+
+      songs[index] = { title, artist, src: file, img: imgURL };
+      createGridItem(index, title, artist, imgURL);
+    },
+    onError: (err) => {
+      console.warn("Metadata error:", err);
+      songs[index] = { title: file, artist: "Unknown", src: file, img: "https://via.placeholder.com/160x160" };
+      createGridItem(index, file, "Unknown", "https://via.placeholder.com/160x160");
+    }
+  });
+});
+
+function createGridItem(index, title, artist, img) {
+  const item = document.createElement("div");
+  item.className = "grid-item";
+  item.innerHTML = `
+    <img src="${img}" alt="Album Art">
+    <div class="info">
+      <h3>${title}</h3>
+      <p>${artist}</p>
+    </div>`;
+  item.onclick = () => loadSong(index, true);
+  grid.appendChild(item);
+}
+
+function loadSong(index, autoplay=false) {
+  currentIndex = index;
+  const song = songs[index];
+  if (!song) return;
+  albumArt.src = song.img;
+  songTitle.textContent = song.title;
+  songArtist.textContent = song.artist;
+  audio.src = song.src;
+  if (autoplay) playSong();
+}
+
+function playSong() {
+  audio.play();
+  isPlaying = true;
+  playPauseBtn.textContent = "⏸️";
+}
+
+function pauseSong() {
+  audio.pause();
+  isPlaying = false;
+  playPauseBtn.textContent = "▶️";
+}
+
+playPauseBtn.onclick = () => {
+  isPlaying ? pauseSong() : playSong();
+};
+nextBtn.onclick = () => {
+  currentIndex = (currentIndex + 1) % songs.length;
+  loadSong(currentIndex, true);
+};
+prevBtn.onclick = () => {
+  currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+  loadSong(currentIndex, true);
+};
+audio.addEventListener("ended", () => nextBtn.click());
+</script>
+
+</body>
+</html>
